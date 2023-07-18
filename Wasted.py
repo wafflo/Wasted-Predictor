@@ -4,8 +4,6 @@ def get_mine_id():
     while True:
         try:
             mine_id = input("Please enter the mine ID: ")
-            # You can add additional validation checks for the mine ID if needed.
-            # For simplicity, we'll assume any input is valid for this example.
             return mine_id
         except KeyboardInterrupt:
             print("\nYou pressed Ctrl+C. Exiting.")
