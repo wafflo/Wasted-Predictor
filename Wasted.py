@@ -1,5 +1,13 @@
 import random
 
+NUM_ROWS = 5
+NUM_COLUMNS = 5
+MIN_STARS = 4
+NUM_BOMBS = 2
+
+STAR_EMOJI = "⭐"
+BOMB_EMOJI = "💣"
+
 def get_mine_id():
     while True:
         try:
@@ -9,25 +17,31 @@ def get_mine_id():
             print("\nYou pressed Ctrl+C. Exiting.")
             exit(0)
 
-def generate_random_stars_and_bombs():
-    num_rows = 5
-    num_columns = 5
-    mine_field = {}
+def place_stars(mine_field):
+    positions = set()
+    while len(positions) < MIN_STARS:
+        row, col = random.randint(0, NUM_ROWS - 1), random.randint(0, NUM_COLUMNS - 1)
+        positions.add((row, col))
+        mine_field[(row, col)] = STAR_EMOJI
 
-    for row in range(num_rows):
-        for col in range(num_columns):
+def place_bombs(mine_field):
+    empty_slots = [(row, col) for row in range(NUM_ROWS) for col in range(NUM_COLUMNS) if mine_field[(row, col)] == " "]
+
+    # Bomb placement in all remaining empty slots
+    for row, col in empty_slots:
+        mine_field[(row, col)] = BOMB_EMOJI
+
+def generate_random_stars_and_bombs():
+    mine_field = {}
+    for row in range(NUM_ROWS):
+        for col in range(NUM_COLUMNS):
             mine_field[(row, col)] = " "  # Initialize the mine field with empty spaces
 
-    # Randomly place stars and bombs on the mine field
-    num_stars = 3
-    num_bombs = 2
-    for _ in range(num_stars):
-        row, col = random.randint(0, num_rows - 1), random.randint(0, num_columns - 1)
-        mine_field[(row, col)] = "⭐"  # Use a star symbol to represent stars
+    # Place stars on the mine field
+    place_stars(mine_field)
 
-    for _ in range(num_bombs):
-        row, col = random.randint(0, num_rows - 1), random.randint(0, num_columns - 1)
-        mine_field[(row, col)] = "💣"  # Use a bomb symbol to represent bombs
+    # Place bombs on the mine field
+    place_bombs(mine_field)
 
     return mine_field
 
@@ -37,20 +51,22 @@ def main():
 
     mine_field = generate_random_stars_and_bombs()
 
+    # the width of each cell determined on the length of the emojis
+    cell_width = max(len(STAR_EMOJI), len(BOMB_EMOJI)) + 2  # Add 2 for padding
+
     # Display the mine field
-    num_rows = 5
-    num_columns = 5
-    for row in range(num_rows):
-        for col in range(num_columns):
-            print(mine_field[(row, col)], end=" ")
-            if col < num_columns - 1:
+    for row in range(NUM_ROWS):
+        for col in range(NUM_COLUMNS):
+            content = mine_field[(row, col)].center(cell_width)
+            print(content, end="")
+            if col < NUM_COLUMNS - 1:
                 print("|", end="")  # Add a vertical line between columns
         print()
-        if row < num_rows - 1:
-            print("-" * (num_columns * 2 - 1))  # Add a horizontal line between rows
+        if row < NUM_ROWS - 1:
+            print("-" * (cell_width * NUM_COLUMNS + (NUM_COLUMNS - 1)))  # Add a horizontal line between rows
 
 if __name__ == "__main__":
     main()
 
-    # Add a prompt to keep the window open
+    # keep the window open
     input("Press Enter to exit...")
